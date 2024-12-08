@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ecf0f1;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            background-color: rgba(52, 73, 94, 0.9);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        header input[type="text"] {
+            width: 50%;
+            padding: 10px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        header select {
+            margin-left: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            background-color: #1abc9c;
+            color: #fff;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .movie-list {
+            list-style: none;
+            padding: 0;
+            display: block;
+        }
+
+        .movie-list li {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            margin: 10px 0;
+            background-color: #3b5998;
+            border-radius: 10px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .movie-list li:hover {
+            background-color: #1abc9c;
+            transform: scale(1.05);
+        }
+
+        .movie-list li img {
+            width: 50px;
+            height: 75px;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+
+        .toggle-dark-mode {
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            background: #ecf0f1;
+            color: #34495e;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Movie Search</h1>
+    <input type="text" id="search-bar" placeholder="Search for a movie..." onkeyup="searchMovies()">
+    <select id="genre-filter" onchange="filterByGenre()">
+        <option value="all">All Genres</option>
+        <option value="action">Action</option>
+        <option value="comedy">Comedy</option>
+        <option value="horror">Horror</option>
+    </select>
+    <button class="toggle-dark-mode" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+</header>
+
+<div class="container">
+    <ul class="movie-list" id="movie-list"></ul>
+</div>
+
+<!-- Dynamic Movie Loading -->
+<script>
+    fetch('/content/movies.json') // Fetch movie data from JSON file created by Netlify CMS
+        .then(response => response.json())
+        .then(data => {
+            const movieList = document.getElementById('movie-list');
+            movieList.innerHTML = data.map(movie => `
+                <li data-genre="${movie.genre}">
+                    <img src="${movie.image || 'https://via.placeholder.com/50x75'}" alt="${movie.title}">
+                    <a href="${movie.link}" target="_blank">${movie.title}</a>
+                </li>
+            `).join('');
+        })
+        .catch(err => console.error("Error loading movie data:", err));
+
+    function searchMovies() {
+        const query = document.getElementById("search-bar").value.toLowerCase();
+        const movies = document.querySelectorAll(".movie-list li");
+        movies.forEach(movie => {
+            const movieName = movie.querySelector("a").textContent.toLowerCase();
+            movie.style.display = movieName.includes(query) ? "flex" : "none";
+        });
+    }
+
+    function filterByGenre() {
+        const genre = document.getElementById("genre-filter").value;
+        const movies = document.querySelectorAll(".movie-list li");
+        movies.forEach(movie => {
+            movie.style.display = (genre === "all" || movie.dataset.genre === genre) ? "flex" : "none";
+        });
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle("dark-mode");
+    }
+</script>
+
+<!-- Netlify CMS -->
+<script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+</body>
+</html>

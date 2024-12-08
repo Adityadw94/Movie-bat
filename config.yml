@@ -1,0 +1,18 @@
+backend:
+  name: git-gateway
+  branch: main # Use "main" as the default branch for Netlify CMS
+
+media_folder: "uploads" # Folder where images/files will be stored
+public_folder: "/uploads" # Public URL for accessing uploaded files
+
+collections:
+  - name: "movies" # Unique identifier for the content type
+    label: "Movies" # Display name in the CMS
+    folder: "content/movies" # Folder where movie data is stored
+    create: true # Allow new entries
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Genre", name: "genre", widget: "select", options: ["Action", "Comedy", "Horror"] }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Download Link", name: "link", widget: "string" }
+
